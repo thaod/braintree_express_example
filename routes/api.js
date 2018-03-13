@@ -55,7 +55,7 @@ router.get('/checkouts/:id', function (req, res) {
 router.post('/checkouts', function (req, res) {
   var transactionErrors;
   var amount = req.body.amount; // In production you should not take amounts directly from clients
-  var nonce = req.body.payment_method_nonce;
+  var nonce = req.body.paymentMethodNonce;
 
   gateway.transaction.sale({
     amount: amount,
@@ -66,7 +66,7 @@ router.post('/checkouts', function (req, res) {
   }, function (err, result) {
     if (result.success || result.transaction) {
       res.status(201) // CREATED
-        .json(createResultObject(transaction));
+        .json(createResultObject(result.transaction));
     } else {
       transactionErrors = result.errors.deepErrors();
       res.status(422) // UNPROCESSABLE ENTITY

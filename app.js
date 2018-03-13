@@ -8,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
+var cors = require('cors');
 
 var viewRenderer = require('./routes/view-renderer');
 var api = require('./routes/api');
@@ -32,6 +33,7 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
+app.use(cors());
 
 app.use('/api', api.router);
 app.use('/', viewRenderer.router);
