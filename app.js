@@ -9,7 +9,8 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
 
-var routes = require('./routes/index');
+var viewRenderer = require('./routes/view-renderer');
+var api = require('./routes/api');
 
 var app = express();
 
@@ -32,7 +33,8 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 
-app.use('/', routes);
+app.use('/api', api.router);
+app.use('/', viewRenderer.router);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -43,27 +45,8 @@ app.use(function (req, res, next) {
 });
 
 // error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function (err, req, res, next) { // eslint-disable-line no-unused-vars
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function (err, req, res, next) { // eslint-disable-line no-unused-vars
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
+var ENV = app.get('env');
+app.use('/api', api.errorHandler(ENV));
+app.use(viewRenderer.errorHandler(ENV));
 
 module.exports = app;

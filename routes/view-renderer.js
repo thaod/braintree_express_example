@@ -3,17 +3,8 @@
 var express = require('express');
 var braintree = require('braintree');
 var router = express.Router(); // eslint-disable-line new-cap
-var gateway = require('../lib/gateway');
-
-var TRANSACTION_SUCCESS_STATUSES = [
-  braintree.Transaction.Status.Authorizing,
-  braintree.Transaction.Status.Authorized,
-  braintree.Transaction.Status.Settled,
-  braintree.Transaction.Status.Settling,
-  braintree.Transaction.Status.SettlementConfirmed,
-  braintree.Transaction.Status.SettlementPending,
-  braintree.Transaction.Status.SubmittedForSettlement
-];
+var gateway = require('../lib/gateway').gateway;
+var TRANSACTION_SUCCESS_STATUSES = require('../lib/gateway').TRANSACTION_SUCCESS_STATUSES;
 
 function formatErrors(errors) {
   var formattedErrors = '';
@@ -89,4 +80,26 @@ router.post('/checkouts', function (req, res) {
   });
 });
 
-module.exports = router;
+// error handlers
+var errorHandler = function initErrorHandler(env) {
+  var errorIncluded = true;
+
+  if (env && env === 'production') {
+    errorIncluded = false;
+  }
+
+  return function apiErrorHandler(err, req, res, next) {
+    var errResult = {
+      message: err.message,
+      error: errorIncluded ? err : {},
+    };
+
+    res.status(err.status || 500)
+      .json(errResult);
+  };
+}
+
+module.exports = {
+  router: router,
+  errorHandler: errorHandler,
+};
