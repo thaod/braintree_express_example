@@ -15,6 +15,9 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+var host = process.env.HOST || 'localhost';
+app.set('host', host);
+
 /**
  * Create HTTP server.
  */
@@ -25,7 +28,8 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+console.log('Starting server on ' + host + ':' + port);
+server.listen(port, host);
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -86,5 +90,6 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  debug('Listening on ' + addr.address + ' ' + bind);
+  console.log('Server started. Listening for requests...');
 }
