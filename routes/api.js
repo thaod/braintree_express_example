@@ -56,10 +56,12 @@ router.post('/checkouts', function (req, res) {
   var transactionErrors;
   var amount = req.body.amount; // In production you should not take amounts directly from clients
   var nonce = req.body.paymentMethodNonce;
+  var merchantAccountId = process.env.BT_MERCHANT_ACCOUNT_ID; //
 
   gateway.transaction.sale({
     amount: amount,
     paymentMethodNonce: nonce,
+    merchantAccountId: merchantAccountId,
     options: {
       submitForSettlement: true
     }
